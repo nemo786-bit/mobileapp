@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TrailTime</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0b6e4f">
+<style>
+:root {
+  color-scheme: light dark;
+  --accent: #0b6e4f;
+  --warn: light-dark(#b3261e, #ffb4ab);
+  --line: color-mix(in srgb, CanvasText 20%, Canvas);
+  --mute: color-mix(in srgb, CanvasText 65%, Canvas);
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.4 system-ui, sans-serif; background: Canvas; color: CanvasText; }
+button, input, textarea { font: inherit; color: inherit; }
+header {
+  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px;
+  padding: max(8px, env(safe-area-inset-top)) 16px 8px; background: var(--accent); color: #fff;
+}
+header h1 { font-size: 1rem; margin: 0 auto 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+nav { display: flex; gap: 4px; }
+nav button { min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: none; color: #fff; }
+nav button[aria-current=page] { background: #fff; color: var(--accent); font-weight: 600; }
+main { max-width: 720px; margin: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
+h2 { font-size: 1.1rem; margin: 24px 0 8px; }
+h2 small, .hint { color: var(--mute); font-weight: 400; font-size: .875rem; }
+.btn, .start { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: Canvas; }
+.start { border-color: var(--accent); font-weight: 600; touch-action: none; }
+.danger { color: var(--warn); border-color: var(--warn); }
+#warn { padding: 12px 16px; background: var(--warn); color: Canvas; font-weight: 600; }
+em { color: var(--warn); font-style: normal; font-weight: 600; }
+
+.clock { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+.clock span:first-child { flex: 1; font-weight: 600; }
+[data-clock], .meta b, td { font-variant-numeric: tabular-nums; }
+[data-clock] { font-size: 1.5rem; }
+#clocks > .start { width: 100%; margin-top: 4px; }
+
+#bib {
+  width: 100%; margin: 12px 0; padding: 8px; font-size: 2rem; text-align: center;
+  border: 2px solid var(--line); border-radius: 12px; background: Canvas;
+}
+#finish {
+  width: 100%; min-height: 9rem; border: 0; border-radius: 16px; background: var(--accent); color: #fff;
+  font-size: 2.5rem; font-weight: 800; letter-spacing: .05em;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+}
+#finish:active { filter: brightness(.7); }
+
+#log { list-style: none; padding: 0; margin: 16px 0 0; }
+#log li { display: grid; grid-template-columns: 2rem 1fr 5.5rem 44px; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
+#log .empty { display: block; padding: 16px 0; color: var(--mute); }
+.seq { color: var(--mute); text-align: right; }
+.meta b { font-size: 1.15rem; }
+.meta small { display: block; color: var(--mute); }
+#log input { width: 100%; min-height: 44px; text-align: center; border: 1px solid var(--line); border-radius: 8px; background: Canvas; }
+.x { min-height: 44px; border: 0; background: none; color: var(--mute); font-size: 1.1rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .flash { animation: flash .8s; }
+  @keyframes flash { from { background: color-mix(in srgb, var(--accent) 35%, Canvas); } }
+}
+
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 6px; text-align: left; border-top: 1px solid var(--line); white-space: nowrap; }
+td:nth-child(3) { white-space: normal; } /* long names wrap so the time column stays on screen */
+th { color: var(--mute); font-weight: 400; font-size: .875rem; border: 0; }
+td:last-child, th:last-child { text-align: right; font-weight: 600; }
+#attention { padding-left: 1.2em; }
+
+label { display: block; font-weight: 600; margin: 24px 0 8px; }
+#eventName, textarea, .race input { width: 100%; min-height: 44px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: Canvas; }
+.race { display: grid; grid-template-columns: 1fr 44px; gap: 8px; margin-bottom: 16px; }
+.race input { grid-column: 1 / -1; min-width: 0; }
+.race input:has(+ .x) { grid-column: 1; }
+textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: .875rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">TrailTime</h1>
+  <nav>
+    <button data-tab="timing">Timing</button>
+    <button data-tab="results">Results</button>
+    <button data-tab="setup">Setup</button>
+  </nav>
+</header>
+<div id="warn" role="alert" hidden>This device is not saving your data. Export the results now.</div>
+
+<main>
+  <section id="timing">
+    <div id="clocks"></div>
+    <input id="bib" inputmode="numeric" autocomplete="off" placeholder="Bib (optional)" aria-label="Bib number">
+    <button id="finish" type="button">FINISH</button>
+    <p class="hint">The time is taken the instant you press. Bibs can be typed first, or filled in afterwards in the list below.</p>
+    <ol id="log"></ol>
+  </section>
+
+  <section id="results" hidden>
+    <button id="export" class="btn">Export CSV</button>
+    <div id="tables"></div>
+  </section>
+
+  <section id="setup" hidden>
+    <label for="eventName">Event name</label>
+    <input id="eventName" autocomplete="off">
+
+    <label>Races and start times</label>
+    <p class="hint">Start times are set by the Start button on the Timing tab. Correct them here if the gun went off on another clock.</p>
+    <div id="races"></div>
+    <button id="addRace" class="btn">Add race</button>
+
+    <label for="entrants">Entry list <span id="entrantCount" class="hint"></span></label>
+    <p class="hint">Optional. One athlete per line: <code>bib, name, category, race</code>. You can paste straight from Excel. Importing replaces the current list.</p>
+    <textarea id="entrants" placeholder="101, Jane Doe, F40, 25K"></textarea>
+    <button id="import" class="btn">Import entry list</button>
+
+    <label>Start over</label>
+    <button id="reset" class="btn danger">Reset event</button>
+  </section>
+</main>
+
+<script src="core.js"></script>
+<script>
+const KEY = 'trailtime';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
+const localIso = ms => new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 19);
+const fresh = () => ({ name: '', races: [{ id: newId(), name: 'Race', start: null }], entrants: {}, finishes: [] });
+
+let state;
+function load() {
+  try { state = JSON.parse(localStorage.getItem(KEY)) || fresh(); } catch { state = fresh(); }
+  $('eventName').value = state.name;
+}
+// Saved on every change, so a closed tab or dead battery loses nothing.
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); $('warn').hidden = true; }
+  catch { $('warn').hidden = false; }
+}
+
+// rebuild=false after an in-place field edit: the inputs already show the new value, and replacing
+// them would throw away the focus of whichever field the user just tapped into.
+function render(rebuild = true) {
+  const res = results(state);
+  const info = {};
+  for (const r of [...res.races.flatMap(o => o.rows), ...res.unranked]) info[r.id] = r;
+  const many = state.races.length > 1;
+
+  $('title').textContent = state.name || 'TrailTime';
+  const waiting = state.races.filter(r => r.start == null);
+  $('clocks').innerHTML = state.races.map(r => `
+    <div class="clock"><span>${esc(r.name)}</span>
+      <span data-clock="${r.id}">${r.start == null ? '' : fmt(Date.now() - r.start)}</span>
+      ${r.start == null ? `<button class="start" data-start="${r.id}">Start</button>` : ''}
+    </div>`).join('')
+    + (waiting.length > 1 ? `<button class="start" data-start="all">Start all ${waiting.length} together</button>` : '');
+
+  if (rebuild) {
+    const sorted = [...state.finishes].sort((a, b) => a.t - b.t);
+    $('log').innerHTML = sorted.map((f, i) => `
+      <li data-id="${f.id}">
+        <span class="seq">${i + 1}</span>
+        <span class="meta"></span>
+        <input data-bib="${f.id}" value="${esc(f.bib)}" inputmode="numeric" autocomplete="off" placeholder="bib" aria-label="Bib for finish ${i + 1}">
+        <button class="x" data-del="${f.id}" aria-label="Delete finish ${i + 1}">✕</button>
+      </li>`).reverse().join('') || '<li class="empty">No finishers yet. Start the race, then press FINISH as each athlete crosses the line.</li>';
+
+    $('races').innerHTML = state.races.map(r => `
+      <div class="race">
+        <input data-rname="${r.id}" value="${esc(r.name)}" aria-label="Race name">
+        ${many ? `<button class="x" data-rdel="${r.id}" aria-label="Delete race ${esc(r.name)}">✕</button>` : ''}
+        <input data-rstart="${r.id}" type="datetime-local" step="1" value="${r.start == null ? '' : localIso(r.start)}" aria-label="Start time of ${esc(r.name)}">
+      </div>`).join('');
+  }
+  for (const li of $('log').children) {
+    const r = info[li.dataset.id];
+    if (!r) continue;
+    const who = r.problem ? `<em>${r.problem}</em>` : r.unknown ? '<em>not in entry list</em>' : esc(r.name);
+    li.querySelector('.meta').innerHTML =
+      `<b>${fmt(r.elapsed)}</b><small>${[tod(r.t), many && r.bib ? esc(r.race) : '', who].filter(Boolean).join(' · ')}</small>`;
+  }
+
+  $('tables').innerHTML = res.races.map(o => `
+    <h2>${esc(o.race.name)} <small>${o.rows.length} finished</small></h2>
+    ${o.rows.length ? `<div class="scroll"><table>
+      <tr><th>Pos</th><th>Bib</th><th>Name</th><th>Cat</th><th>Cat pos</th><th>Time</th></tr>
+      ${o.rows.map(r => `<tr><td>${r.pos}</td><td>${esc(r.bib)}</td><td>${r.unknown ? '<em>not in entry list</em>' : esc(r.name)}</td><td>${esc(r.cat)}</td><td>${r.catPos}</td><td>${fmt(r.elapsed)}</td></tr>`).join('')}
+    </table></div>` : ''}`).join('')
+    + (res.unranked.length ? `<h2>Needs attention <small>not ranked yet</small></h2><ul id="attention">
+      ${res.unranked.map(r => `<li>${tod(r.t)} · ${r.bib ? `bib ${esc(r.bib)} · ` : ''}<em>${r.problem}</em></li>`).join('')}</ul>` : '');
+
+  const n = Object.keys(state.entrants).length;
+  $('entrantCount').textContent = n ? `(${n} loaded)` : '';
+}
+
+function tick() {
+  const now = Date.now();
+  for (const el of document.querySelectorAll('[data-clock]')) {
+    const r = state.races.find(r => r.id === el.dataset.clock);
+    if (r?.start != null) el.textContent = fmt(now - r.start);
+  }
+}
+
+// Date.now(), not performance.now(): the monotonic clock stops while a phone sleeps, and a trail race lasts hours.
+function record(t) {
+  const bib = $('bib').value.trim();
+  state.finishes.push({ id: newId(), t, bib });
+  $('bib').value = '';
+  save();
+  render();
+  $('log').firstElementChild.classList.add('flash');
+  navigator.vibrate?.(40);
+  if (bib) $('bib').focus(); // typing bibs first: stay ready for the next one
+}
+
+// Fire on press, not release: click arrives ~100ms late. A click with detail 0 comes from a keyboard
+// or assistive tech, which never sends pointerdown.
+function onPress(sel, fn) {
+  const on = (type, ok) => document.addEventListener(type, e => {
+    const t = Date.now();
+    const el = e.target.closest?.(sel);
+    if (el && ok(e)) fn(el, t);
+  });
+  on('pointerdown', e => e.button === 0);
+  on('click', e => e.detail === 0);
+}
+onPress('#finish', (_, t) => record(t));
+onPress('[data-start]', (el, t) => {
+  for (const r of state.races) if (r.start == null && [r.id, 'all'].includes(el.dataset.start)) r.start = t;
+  save();
+  render();
+});
+$('bib').addEventListener('keydown', e => { if (e.key === 'Enter') record(Date.now()); });
+
+function show(tab) {
+  for (const s of document.querySelectorAll('main > section')) s.hidden = s.id !== tab;
+  for (const b of document.querySelectorAll('[data-tab]')) b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false');
+}
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('button');
+  if (!el) return;
+  const d = el.dataset;
+  if (d.tab) return show(d.tab);
+  if (d.del) {
+    const f = state.finishes.find(f => f.id === d.del);
+    if (!confirm(`Delete the finish at ${tod(f.t)}${f.bib ? ` (bib ${f.bib})` : ''}?`)) return;
+    state.finishes = state.finishes.filter(x => x !== f);
+  } else if (d.rdel) {
+    const r = state.races.find(r => r.id === d.rdel);
+    if (!confirm(`Delete race "${r.name}"? Its athletes will be timed against "${state.races.find(x => x !== r).name}".`)) return;
+    state.races = state.races.filter(x => x !== r);
+  } else if (el.id === 'addRace') {
+    state.races.push({ id: newId(), name: `Race ${state.races.length + 1}`, start: null });
+  } else if (el.id === 'import') {
+    const parsed = parseEntrants($('entrants').value, state.races);
+    if (!Object.keys(parsed.entrants).length) return alert('No athletes found. Expected one per line: bib, name, category, race');
+    Object.assign(state, parsed);
+    $('entrants').value = '';
+  } else if (el.id === 'reset') {
+    if (!confirm('Delete ALL finish times, races and the entry list from this device? Export the results first if you need them.')) return;
+    state = fresh();
+    $('eventName').value = '';
+  } else if (el.id === 'export') {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + toCsv(results(state))], { type: 'text/csv' })); // BOM: Excel reads accents correctly
+    a.download = `${state.name || 'results'}.csv`;
+    return a.click();
+  } else return;
+  save();
+  render();
+});
+
+document.addEventListener('change', e => {
+  const d = e.target.dataset, v = e.target.value.trim();
+  if (d.bib) state.finishes.find(f => f.id === d.bib).bib = v;
+  else if (d.rname) state.races.find(r => r.id === d.rname).name = v || 'Race';
+  else if (d.rstart) state.races.find(r => r.id === d.rstart).start = v ? new Date(v).getTime() : null;
+  else if (e.target.id === 'eventName') state.name = v;
+  else return;
+  save();
+  render(false);
+});
+
+// Another tab of this app changed the data: follow it rather than overwrite it.
+addEventListener('storage', () => { load(); render(); });
+
+// Keep the screen on at the finish line. The lock is dropped whenever the page is hidden, so re-take it.
+const stayAwake = () => navigator.wakeLock?.request('screen').catch(() => {});
+document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && stayAwake());
+stayAwake();
+
+navigator.serviceWorker?.register('sw.js').catch(() => {}); // offline + install; unavailable when opened as a file
+
+load();
+render();
+show('timing');
+setInterval(tick, 100);
+</script>
+</body>
+</html>
