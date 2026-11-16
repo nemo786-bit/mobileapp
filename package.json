@@ -1,0 +1,11 @@
+{
+  "name": "trailtime",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Finish-line timing for trail races",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "engines": { "node": ">=20" }
+}
