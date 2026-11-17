@@ -1,11 +1,11 @@
 // Offline support: serve the cached copy at once (finish lines rarely have signal), refresh it in the
 // background when there is a connection. An update therefore shows up on the second load after deploying.
 // Sync requests (/api/) are never cached: they go straight to the network.
-const CACHE = 'trailtime-v2';
+const CACHE = 'trailtime-v3';
 
 self.addEventListener('install', e => e.waitUntil(
   caches.open(CACHE)
-    .then(c => c.addAll(['./', 'core.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png']))
+    .then(c => c.addAll(['./', 'core.js', 'app.js', 'app.css', 'fonts/archivo.woff2', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png']))
     .then(() => self.skipWaiting())
 ));
 self.addEventListener('activate', e => e.waitUntil(

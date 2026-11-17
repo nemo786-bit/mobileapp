@@ -7,119 +7,69 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#0b6e4f">
-<style>
-:root {
-  color-scheme: light dark;
-  --accent: #0b6e4f;
-  --warn: light-dark(#b3261e, #ffb4ab);
-  --line: color-mix(in srgb, CanvasText 20%, Canvas);
-  --mute: color-mix(in srgb, CanvasText 65%, Canvas);
-}
-* { box-sizing: border-box; }
-[hidden] { display: none !important; }
-body { margin: 0; font: 16px/1.4 system-ui, sans-serif; background: Canvas; color: CanvasText; }
-button, input, select, textarea { font: inherit; color: inherit; }
-input, select, textarea { min-width: 0; min-height: 44px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: Canvas; }
-header {
-  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 8px;
-  padding: max(8px, env(safe-area-inset-top)) 16px 8px; background: var(--accent); color: #fff;
-}
-header h1 { font-size: 1rem; margin: 0 auto 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-nav { display: flex; gap: 4px; }
-nav button { min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: none; color: #fff; }
-nav button[aria-current=page] { background: #fff; color: var(--accent); font-weight: 600; }
-.viewer nav, .viewer #updatesBox { display: none; }
-main { max-width: 720px; margin: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
-h2 { font-size: 1.1rem; margin: 24px 0 8px; }
-h2 small, .hint, td small { color: var(--mute); font-weight: 400; font-size: .875rem; }
-.btn, .start { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: Canvas; }
-.start { border-color: var(--accent); font-weight: 600; touch-action: none; }
-.danger { color: var(--warn); border-color: var(--warn); }
-.bar { padding: 10px 16px; font-weight: 600; }
-#warn { background: var(--warn); color: Canvas; }
-#net { background: color-mix(in srgb, var(--warn) 18%, Canvas); }
-em { color: var(--warn); font-style: normal; font-weight: 600; }
-.x { min-width: 44px; min-height: 44px; border: 0; background: none; color: var(--mute); font-size: 1.1rem; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; }
-.row > input, .row > select { flex: 1 1 6rem; }
-
-.clock { display: flex; align-items: center; gap: 12px; min-height: 48px; }
-.clock span:first-child { flex: 1; font-weight: 600; }
-[data-clock], .meta b, td { font-variant-numeric: tabular-nums; }
-[data-clock] { font-size: 1.5rem; }
-#clocks > .start { width: 100%; margin-top: 4px; }
-#pointRow { display: flex; align-items: center; gap: 12px; margin: 12px 0 0; font-weight: 600; }
-#pointRow select { flex: 1; }
-
-#bib { width: 100%; margin: 12px 0; font-size: 2rem; text-align: center; border-width: 2px; border-radius: 12px; }
-#finish {
-  width: 100%; min-height: 9rem; border: 0; border-radius: 16px; background: var(--accent); color: #fff;
-  font-size: 2.5rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; overflow-wrap: anywhere;
-  touch-action: none; user-select: none; -webkit-user-select: none;
-}
-#finish:active { filter: brightness(.7); }
-
-#log, #updates { list-style: none; padding: 0; margin: 16px 0 0; }
-#log li { display: grid; grid-template-columns: 2rem 1fr 5.5rem 44px; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); }
-#log .empty { display: block; padding: 16px 0; color: var(--mute); }
-.seq { color: var(--mute); text-align: right; }
-.meta b { font-size: 1.15rem; }
-.meta small { display: block; color: var(--mute); }
-#log input { text-align: center; }
-#updates li { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); }
-#updates li span { flex: 1; }
-@media (prefers-reduced-motion: no-preference) {
-  .flash { animation: flash .8s; }
-  @keyframes flash { from { background: color-mix(in srgb, var(--accent) 35%, Canvas); } }
-}
-
-.scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 6px; text-align: left; border-top: 1px solid var(--line); white-space: nowrap; vertical-align: top; }
-td:nth-child(3) { white-space: normal; } /* long names wrap so the time column stays on screen */
-td small { display: block; }
-th { color: var(--mute); font-weight: 400; font-size: .875rem; border: 0; }
-td:last-child, th:last-child { text-align: right; font-weight: 600; }
-tr.out td { color: var(--mute); }
-#attention { padding-left: 1.2em; }
-
-label, .label { display: block; font-weight: 600; margin: 24px 0 8px; }
-#eventName, textarea { width: 100%; }
-.race { display: grid; grid-template-columns: 1fr 1fr 44px; gap: 8px; margin-bottom: 16px; }
-.race [data-rname] { grid-column: 1 / 3; }
-.race [data-rtime] { grid-column: 2 / 4; }
-.pt { display: grid; grid-template-columns: 1fr 44px; gap: 8px; margin-bottom: 8px; }
-textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: .875rem; }
-#syncBox p { margin: 0 0 8px; overflow-wrap: anywhere; }
-</style>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B1C1E">
+<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
 </head>
 <body>
-<header>
-  <h1 id="title">TrailTime</h1>
-  <nav>
+<header class="top">
+  <div class="mark" id="title">TrailTime</div>
+  <nav class="tabs" aria-label="Sections">
     <button data-tab="timing">Timing</button>
+    <button data-tab="starts">Starts</button>
     <button data-tab="results">Results</button>
-    <button data-tab="setup">Setup</button>
+    <button data-tab="ops">Ops</button>
+    <button class="morebtn" popovertarget="more">More</button>
+    <div id="more" popover>
+      <button data-tab="people">Registration</button>
+      <button data-tab="box">Penalty box</button>
+      <button data-tab="setup">Setup</button>
+    </div>
   </nav>
+  <div class="status" id="status" hidden><i></i><span></span></div>
 </header>
 <div id="warn" class="bar" role="alert" hidden>This device is not saving your data. Export the results now.</div>
 <div id="net" class="bar" role="status" hidden></div>
 
 <main>
   <section id="timing">
-    <div id="clocks"></div>
-    <label id="pointRow" hidden>This device is at <select id="point"></select></label>
-    <input id="bib" inputmode="numeric" autocomplete="off" placeholder="Bib (optional)" aria-label="Bib number">
-    <button id="finish" type="button">Finish</button>
-    <p class="hint">The time is taken the instant you press. Bibs can be typed first, or filled in afterwards in the list below. A chip or barcode reader that types into the bib box records a time on its own.</p>
-    <ol id="log"></ol>
+    <div id="clocks" class="rfields"></div>
+    <div class="cols">
+      <div>
+        <label id="pointRow" hidden>This device is at <select id="point"></select></label>
+        <div class="bibbox" id="bibbox">
+          <i></i>
+          <input id="bib" inputmode="numeric" autocomplete="off" placeholder="Bib number (optional)" aria-label="Bib number" aria-describedby="bibWho">
+          <p id="bibWho" aria-live="polite"></p>
+        </div>
+        <button id="press" type="button">Finish</button>
+        <p class="hint">The time is taken the instant you press. Type the bib first, or fill it in afterwards in the list. A chip or barcode reader that types into the bib box records a time by itself.</p>
+      </div>
+      <div>
+        <h2 id="logTitle">Recorded here</h2>
+        <ol id="log" class="log"></ol>
+      </div>
+    </div>
+  </section>
+
+  <section id="starts" hidden>
+    <button id="startAll" class="btn primary" hidden></button>
+    <div id="rcards" class="rcards"></div>
   </section>
 
   <section id="results" hidden>
-    <button id="export" class="btn">Export CSV</button>
-    <div id="tables"></div>
-    <div id="updatesBox">
+    <div class="toolbar">
+      <div id="resRaces" class="seg" role="group" aria-label="Race"></div>
+      <label>Show <select id="resFilter"></select></label>
+      <button id="export" class="btn">Export CSV</button>
+    </div>
+    <div id="sheet" class="card pad"></div>
+    <div id="attnBox" class="attn" hidden>
+      <h2>Needs attention <small>these presses are not counted until fixed</small></h2>
+      <ol id="attn"></ol>
+    </div>
+    <div data-edit>
       <h2>DNF, DNS and penalties</h2>
       <div class="row">
         <input id="uBib" inputmode="numeric" autocomplete="off" placeholder="Bib" aria-label="Bib number">
@@ -132,370 +82,107 @@ textarea { min-height: 8rem; font-family: ui-monospace, monospace; font-size: .8
         <input id="uMin" type="number" min="0" step="any" placeholder="Minutes" aria-label="Penalty in minutes" hidden>
         <button id="uAdd" class="btn">Add</button>
       </div>
-      <ul id="updates"></ul>
+      <ul id="updates" class="plain"></ul>
     </div>
+  </section>
+
+  <section id="ops" hidden>
+    <div id="opsFields" class="opsfields"></div>
+    <div class="toolbar" style="margin-top:16px">
+      <label class="grow">Find an athlete <input id="find" type="search" autocomplete="off" placeholder="Bib or name"></label>
+    </div>
+    <div id="found" class="found"></div>
+    <div class="cols even">
+      <div>
+        <h2>Just finished</h2>
+        <div id="wallDone" class="wall"></div>
+        <h2>Longest since last seen <small>still on course</small></h2>
+        <div id="wallOut" class="wall"></div>
+        <div id="opsAttn"></div>
+      </div>
+      <div>
+        <div class="toolbar" style="margin-top:28px">
+          <div id="opsRaces" class="seg" role="group" aria-label="Race"></div>
+          <label>Show <select id="opsFilter"></select></label>
+        </div>
+        <div class="card pad">
+          <h2 style="margin-top:0">Top 10</h2>
+          <div id="top10"></div>
+          <h2>Seen at each point</h2>
+          <div id="bars" class="bars"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="people" hidden>
+    <div id="regStats" class="rfields"></div>
+    <div class="toolbar">
+      <label class="grow">Search or scan <input id="q" type="search" autocomplete="off" placeholder="Bib or name. Enter checks in an exact bib"></label>
+      <label>Race <select id="regRace"></select></label>
+      <div id="regState" class="seg" role="group" aria-label="Check-in state">
+        <button data-state="all">All</button><button data-state="todo">To check in</button><button data-state="in">Checked in</button>
+      </div>
+      <button id="addAthlete" class="btn primary">Add athlete</button>
+    </div>
+    <p id="regMsg" class="hint" role="status"></p>
+    <div id="roster" class="card pad"></div>
+  </section>
+
+  <section id="box" hidden>
+    <h2 style="margin-top:0">Send to the penalty box</h2>
+    <div class="row">
+      <input id="bBib" inputmode="numeric" autocomplete="off" placeholder="Bib" aria-label="Bib number">
+      <input id="bMin" type="number" min="0" step="any" placeholder="Minutes" aria-label="Penalty in minutes">
+      <button id="bAdd" class="btn primary">Send to box</button>
+    </div>
+    <p class="hint" style="margin-top:8px">The athlete stands in the box for the whole time; nothing is added to their result. A penalty that is never served is flagged on the results.</p>
+    <div id="boxLists"></div>
   </section>
 
   <section id="setup" hidden>
     <label for="eventName">Event name</label>
-    <input id="eventName" autocomplete="off">
+    <input id="eventName" autocomplete="off" style="width:100%">
 
-    <div class="label">Races and start times</div>
-    <p class="hint">Start times are set by the Start button on the Timing tab. To correct one, type the time of day, down to a thousandth if you have it: <code>07:00:00.250</code></p>
-    <div id="races"></div>
+    <div class="label">Races</div>
+    <p class="hint">Each race keeps its colour everywhere in the app. Start types and start times are on the Starts tab.</p>
+    <div id="races" style="margin-top:8px"></div>
     <button id="addRace" class="btn">Add race</button>
 
     <div class="label">Checkpoints</div>
     <p class="hint">Optional timing points out on the course. Each device chooses on the Timing tab which point it is standing at; the finish line is always there.</p>
-    <div id="points"></div>
+    <div id="points" style="margin-top:8px"></div>
     <button id="addPoint" class="btn">Add checkpoint</button>
 
     <label for="entrants">Entry list <span id="entrantCount" class="hint"></span></label>
-    <p class="hint">Optional. One athlete per line: <code>bib, name, category, race, chip</code>. You can paste straight from Excel. The chip column is only for chip or barcode readers. Importing replaces the current list.</p>
-    <textarea id="entrants" placeholder="101, Jane Doe, F40, 25K"></textarea>
+    <p class="hint">One athlete per line: <code>bib, name, category, race, chip, sex</code>. Only the bib is required. You can paste straight from Excel. Importing replaces the current list; single athletes are added on the Registration tab.</p>
+    <textarea id="entrants" placeholder="101, Jane Doe, F40, 25K, , F" style="margin-top:8px"></textarea>
     <button id="import" class="btn">Import entry list</button>
 
     <div class="label">Share with other devices</div>
     <div id="syncBox"></div>
 
+    <div class="label">Appearance</div>
+    <div id="theme" class="seg" role="group" aria-label="Theme">
+      <button data-theme="">Match device</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button>
+    </div>
+
+    <div id="demoBox">
+      <div class="label">Try it with sample data</div>
+      <p class="hint">Fills this device with an invented event (two races, checkpoints, 140 made-up athletes) so you can explore every screen.</p>
+      <button id="demo" class="btn" style="margin-top:8px">Load sample event</button>
+    </div>
+
     <div class="label">Start over</div>
     <button id="reset" class="btn danger">Reset this device</button>
   </section>
+
+  <section id="board" hidden></section>
 </main>
 
+<dialog id="card" aria-labelledby="cardName"></dialog>
+
 <script src="core.js"></script>
-<script>
-const VIEW = new URLSearchParams(location.search).get('view'); // read-only live results link
-const KEY = 'trailtime.v2', DEV = 'trailtime.device';
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
-const localIso = ms => new Date(ms - new Date(ms).getTimezoneOffset() * 60000).toISOString().slice(0, 19);
-
-// state.recs is the event (shared when syncing). dev is this device only: which event it joined, what
-// it still has to send, its clock correction and the timing point it stands at.
-const freshDev = () => ({ code: '', since: 0, dirty: {}, offset: 0, rtt: 1e9, point: '', view: '' });
-let state, dev, V, starts = {}, online = false, busy = false;
-
-const read = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; } };
-function load() {
-  state = VIEW ? { recs: {} } : read(KEY, { recs: {} });
-  dev = { ...freshDev(), ...(VIEW ? {} : read(DEV, {})) };
-}
-// Saved on every change, so a closed tab or dead battery loses nothing.
-function save() {
-  if (VIEW) return;
-  try {
-    localStorage.setItem(KEY, JSON.stringify(state));
-    localStorage.setItem(DEV, JSON.stringify(dev));
-    $('warn').hidden = true;
-  } catch { $('warn').hidden = false; }
-}
-
-// Date.now(), not performance.now(): the monotonic clock stops while a phone sleeps, and a trail race
-// lasts hours. dev.offset moves this device onto the sync server's clock, so that a start taken on one
-// phone and a finish taken on another are measured against the same clock.
-const now = () => Math.round(Date.now() + dev.offset);
-
-function put(rec) {
-  rec.u = Math.max(now(), (state.recs[rec.id]?.u || 0) + 1); // an edit always outranks what it edits
-  state.recs[rec.id] = rec;
-  dev.dirty[rec.id] = 1;
-}
-const del = id => put({ id, k: state.recs[id].k, del: 1 }); // a deletion is a record too, so it reaches the other devices
-const commit = () => { save(); render(); sync(); };
-const toBib = s => V.chips[s.trim()] || s.trim(); // a chip code from the entry list stands for its bib
-
-async function sync() {
-  const code = dev.code;
-  if (busy || !(VIEW || code)) return;
-  busy = true;
-  const sent = Object.keys(dev.dirty).map(id => state.recs[id]).filter(Boolean);
-  const t0 = Date.now();
-  try {
-    const res = VIEW
-      ? await fetch(`api/view/${encodeURIComponent(VIEW)}?since=${dev.since}`)
-      : await fetch(`api/sync/${code}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ since: dev.since, recs: sent }) });
-    if (!res.ok) throw 0;
-    const body = await res.json();
-    if (code !== dev.code) return; // left or reset while the request was in the air
-    // Clock correction: the server's time lies mid-way through the round trip, give or take half of it.
-    // Trust the quickest round trip seen; let that record age so a later clock change is picked up.
-    const rtt = Date.now() - t0;
-    if (rtt < dev.rtt) { dev.rtt = rtt; dev.offset = body.now - (t0 + rtt / 2); } else dev.rtt += 5;
-    for (const r of sent) if (state.recs[r.id]?.u === r.u) delete dev.dirty[r.id];
-    if (body.seq < dev.since) { // the server lost its copy: hand it ours again
-      for (const id in state.recs) dev.dirty[id] = 1;
-      dev.since = 0;
-    } else dev.since = body.seq;
-    dev.view = body.view || '';
-    const changed = merge(state.recs, body.recs);
-    online = true;
-    save();
-    if (changed.length) render(); else renderSync();
-  } catch { online = false; renderSync(); }
-  finally { busy = false; }
-}
-
-// Sets innerHTML only when it changed, so a refresh from another device doesn't disturb what's on screen.
-function fill(el, html) { if (el._html !== html) el.innerHTML = el._html = html; }
-const setVal = (input, v) => { if (document.activeElement !== input && input.value !== v) input.value = v; };
-// Keyed list: rows are created, moved and removed one by one. A row the user is typing in is never rebuilt.
-function list(el, items, html, update, empty = '') {
-  const ids = new Set(items.map(it => it.id));
-  for (const c of [...el.children]) if (!ids.has(c.dataset.id)) c.remove();
-  const have = new Map([...el.children].map(c => [c.dataset.id, c]));
-  let prev = null;
-  items.forEach((it, i) => {
-    let c = have.get(it.id);
-    if (!c) { const t = document.createElement('template'); t.innerHTML = html(it).trim(); c = t.content.firstElementChild; }
-    const want = prev ? prev.nextSibling : el.firstChild;
-    if (c !== want) el.insertBefore(c, want);
-    update(c, it, i);
-    prev = c;
-  });
-  if (!items.length) el.innerHTML = empty;
-}
-
-function render() {
-  V = view(state.recs);
-  const res = results(V), many = V.races.length > 1;
-  $('title').textContent = V.name || 'TrailTime';
-  setVal($('eventName'), V.name);
-
-  // --- Timing
-  starts = Object.fromEntries(V.races.map(r => [r.id, r.start]));
-  const waiting = V.races.filter(r => r.start == null);
-  fill($('clocks'), V.races.map(r => `
-    <div class="clock"><span>${esc(r.name)}</span><span data-clock="${esc(r.id)}"></span>
-      ${r.start == null ? `<button class="start" data-start="${esc(r.id)}">Start</button>` : ''}
-    </div>`).join('')
-    + (waiting.length > 1 ? `<button class="start" data-start="all">Start all ${waiting.length} together</button>` : ''));
-  tick();
-
-  if (!V.points.some(p => p.id === dev.point)) dev.point = '';
-  $('pointRow').hidden = !V.points.length;
-  fill($('point'), '<option value="">Finish line</option>' + V.points.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join(''));
-  $('point').value = dev.point;
-  $('finish').textContent = V.points.find(p => p.id === dev.point)?.name || 'Finish';
-
-  const times = V.times.filter(f => (f.p || '') === dev.point && res.info[f.id]).sort((a, b) => b.t - a.t);
-  list($('log'), times, f => `
-    <li data-id="${esc(f.id)}"><span class="seq"></span><span class="meta"></span>
-      <input data-bib inputmode="numeric" autocomplete="off" placeholder="bib"><button class="x" data-del>✕</button></li>`,
-    (li, f, i) => {
-      const r = res.info[f.id], n = times.length - i, [seq, meta, bib, x] = li.children;
-      const who = r.problem ? `<em>${esc(r.problem)}</em>` : r.unknown ? '<em>not in entry list</em>' : esc(r.name);
-      seq.textContent = n;
-      fill(meta, `<b>${fmt(r.elapsed)}</b><small>${[tod(r.t), many && r.bib ? esc(r.race) : '', who].filter(Boolean).join(' · ')}</small>`);
-      setVal(bib, f.bib);
-      bib.ariaLabel = `Bib for time ${n}`;
-      x.ariaLabel = `Delete time ${n}`;
-    }, '<li class="empty">Nothing recorded here yet. Start the race, then press the button as each athlete passes.</li>');
-
-  // --- Results
-  const splits = r => V.points.filter(p => r.splits[p.id] != null).map(p => `${esc(p.name)} ${fmt(r.splits[p.id])}`);
-  fill($('tables'), res.races.map(o => {
-    const done = o.rows.filter(r => !r.status).length, out = o.rows.filter(r => r.status === 'on course').length;
-    return `<h2>${esc(o.race.name)} <small>${done} finished${out ? ` · ${out} on course` : ''}</small></h2>
-    ${o.rows.length ? `<div class="scroll"><table>
-      <tr><th>Pos</th><th>Bib</th><th>Name</th><th>Cat</th><th>Cat pos</th><th>Time</th></tr>
-      ${o.rows.map(r => `<tr${r.status ? ' class="out"' : ''}><td>${r.pos ?? ''}</td><td>${esc(r.bib)}</td>
-        <td>${r.unknown ? '<em>not in entry list</em>' : esc(r.name)}<small>${[...splits(r), r.pen ? `+${fmt(r.pen)} penalty` : ''].filter(Boolean).join(' · ')}</small></td>
-        <td>${esc(r.cat)}</td><td>${r.catPos ?? ''}</td><td>${r.status ? esc(r.status) : fmt(r.total)}</td></tr>`).join('')}
-    </table></div>` : ''}`;
-  }).join('')
-    + (res.unranked.length ? `<h2>Needs attention <small>not counted yet</small></h2><ul id="attention">
-      ${res.unranked.map(r => `<li>${tod(r.t)} · ${V.points.length ? esc(r.point) + ' · ' : ''}${r.bib ? `bib ${esc(r.bib)} · ` : ''}<em>${esc(r.problem)}</em></li>`).join('')}</ul>` : ''));
-
-  fill($('updates'), [...V.updates].sort((a, b) => a.u - b.u).map(u => `
-    <li><span>Bib <b>${esc(u.bib)}</b> ${esc(V.entrants[u.bib]?.name)} · ${u.type === 'PEN' ? `+${fmt(u.sec * 1000)} penalty` : esc(u.type)}</span>
-      <button class="x" data-udel="${esc(u.id)}" aria-label="Remove this entry for bib ${esc(u.bib)}">✕</button></li>`).join(''));
-
-  // --- Setup
-  list($('races'), V.races, r => `
-    <div class="race" data-id="${esc(r.id)}">
-      <input data-rname aria-label="Race name"><button class="x" data-rdel aria-label="Delete race">✕</button>
-      <input data-rdate type="date" aria-label="Start date">
-      <input data-rtime autocomplete="off" placeholder="Start time 07:00:00.0" aria-label="Start time of day, hours:minutes:seconds">
-    </div>`,
-    (el, r) => {
-      const [name, x, date, time] = el.children;
-      setVal(name, r.name);
-      x.hidden = !many;
-      if (r.start != null) setVal(date, localIso(r.start).slice(0, 10)); // while unset, leave a date the user picked alone
-      setVal(time, r.start == null ? '' : tod(r.start, 3));
-    });
-  list($('points'), V.points, p => `
-    <div class="pt" data-id="${esc(p.id)}"><input data-pname aria-label="Checkpoint name"><button class="x" data-pdel aria-label="Delete checkpoint">✕</button></div>`,
-    (el, p) => setVal(el.children[0], p.name));
-  const n = Object.keys(V.entrants).length;
-  $('entrantCount').textContent = n ? `(${n} loaded)` : '';
-  renderSync();
-}
-
-function renderSync() {
-  const unsent = Object.keys(dev.dirty).length;
-  $('net').hidden = online || !(VIEW || dev.code);
-  $('net').textContent = VIEW ? 'Offline. Showing the last results received.'
-    : `Offline. ${unsent ? `${unsent} change${unsent > 1 ? 's' : ''} will be sent when the connection returns.` : 'Still recording on this device.'}`;
-  const ms = Math.round(dev.offset);
-  fill($('syncBox'), dev.code ? `
-    <p>Event code <b>${esc(dev.code)}</b> · ${online ? (unsent ? 'sending…' : 'in sync') : '<em>not connected, still trying</em>'}</p>
-    <p class="hint">This device's clock is ${Math.abs(ms) < 50 ? 'in step with' : `${(Math.abs(ms) / 1000).toFixed(2)} s ${ms > 0 ? 'behind' : 'ahead of'}`} the event clock${online || dev.rtt < 1e9 ? '; times are corrected automatically' : ''}.</p>
-    ${dev.view ? `<p><a href="?view=${esc(dev.view)}">Live results link</a> <span class="hint">read-only, safe to share with spectators</span></p>` : ''}
-    <button id="leave" class="btn">Leave event</button>` : `
-    <p class="hint">Devices that enter the same code share one event: starts, times, DNFs and results. This needs the app to be opened from the TrailTime server (see README).</p>
-    <div class="row"><input id="code" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Event code, e.g. moka-2026" aria-label="Event code">
-    <button id="join" class="btn">Join or create</button></div>`);
-}
-
-function tick() {
-  const t = now();
-  for (const el of document.querySelectorAll('[data-clock]')) {
-    const start = starts[el.dataset.clock];
-    el.textContent = start == null ? '' : fmt(t - start);
-  }
-}
-
-function record(t) {
-  const bib = toBib($('bib').value);
-  put({ id: newId(), k: 'time', t, bib, p: dev.point });
-  $('bib').value = '';
-  commit();
-  $('log').firstElementChild.classList.add('flash');
-  navigator.vibrate?.(40);
-  if (bib) $('bib').focus(); // typing bibs first: stay ready for the next one
-}
-
-// Fire on press, not release: click arrives ~100ms late. A click with detail 0 comes from a keyboard
-// or assistive tech, which never sends pointerdown.
-function onPress(sel, fn) {
-  const on = (type, ok) => document.addEventListener(type, e => {
-    const t = now();
-    const el = e.target.closest?.(sel);
-    if (el && ok(e)) fn(el, t);
-  });
-  on('pointerdown', e => e.button === 0);
-  on('click', e => e.detail === 0);
-}
-onPress('#finish', (_, t) => record(t));
-onPress('[data-start]', (el, t) => {
-  for (const r of V.races) if (r.start == null && [r.id, 'all'].includes(el.dataset.start)) put({ ...r, start: t });
-  commit();
-});
-$('bib').addEventListener('keydown', e => { if (e.key === 'Enter') record(now()); });
-// A reader "types" wherever the focus is: on the Timing tab, send stray typing to the bib box.
-document.addEventListener('keydown', e => {
-  if (!$('timing').hidden && /^[\w-]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey
-    && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) $('bib').focus();
-});
-
-function show(tab) {
-  for (const s of document.querySelectorAll('main > section')) s.hidden = s.id !== tab;
-  for (const b of document.querySelectorAll('[data-tab]')) b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false');
-}
-
-document.addEventListener('click', e => {
-  const el = e.target.closest('button');
-  if (!el) return;
-  const d = el.dataset, id = el.closest('[data-id]')?.dataset.id;
-  if (d.tab) return show(d.tab);
-  if ('del' in d) {
-    const f = state.recs[id];
-    if (!confirm(`Delete the time ${tod(f.t)}${f.bib ? ` (bib ${f.bib})` : ''}?`)) return;
-    del(id);
-  } else if ('rdel' in d) {
-    const r = V.races.find(r => r.id === id);
-    if (!confirm(`Delete race "${r.name}"? Its athletes will be timed against "${V.races.find(x => x !== r).name}".`)) return;
-    del(id);
-  } else if ('pdel' in d) {
-    const p = state.recs[id], n = V.times.filter(f => f.p === id).length;
-    if (!confirm(`Delete checkpoint "${p.name}"?${n ? ` Its ${n} recorded time${n > 1 ? 's' : ''} will no longer be shown.` : ''}`)) return;
-    del(id);
-  } else if (d.udel) {
-    del(d.udel);
-  } else if (el.id === 'addRace') {
-    if (!state.recs[V.races[0].id]) put({ ...V.races[0] }); // keep the built-in first race when a second is added
-    put({ id: newId(), k: 'race', name: `Race ${V.races.length + 1}`, start: null, o: now() });
-  } else if (el.id === 'addPoint') {
-    put({ id: newId(), k: 'point', name: `CP${V.points.length + 1}`, o: now() });
-  } else if (el.id === 'uAdd') {
-    const bib = $('uBib').value.trim(), type = $('uType').value, sec = Math.round($('uMin').value * 60);
-    if (!bib) return alert('Enter the bib number.');
-    if (type === 'PEN' && !(sec > 0)) return alert('Enter the penalty in minutes, for example 2 or 0.5.');
-    put({ id: newId(), k: 'update', bib, type, sec: type === 'PEN' ? sec : 0 });
-    $('uBib').value = $('uMin').value = '';
-  } else if (el.id === 'import') {
-    const parsed = parseEntrants($('entrants').value, V.races);
-    if (!parsed.entrants.length) return alert('No athletes found. Expected one per line: bib, name, category, race');
-    for (const e of Object.values(V.entrants)) del(e.id);
-    parsed.races.forEach((r, i) => put({ ...r, k: 'race', start: null, o: now() + i }));
-    for (const e of parsed.entrants) put({ id: 'e:' + e.bib, k: 'entrant', ...e });
-    $('entrants').value = '';
-  } else if (el.id === 'join') {
-    const code = $('code').value.trim().toLowerCase();
-    if (!/^[a-z0-9-]{4,32}$/.test(code)) return alert('An event code is 4 to 32 letters, digits or dashes.');
-    const n = V.times.length;
-    if (n && !confirm(`This device already holds ${n} recorded time${n > 1 ? 's' : ''}. They will be added to event "${code}". If they belong to a different event, cancel and reset this device first.`)) return;
-    Object.assign(dev, { code, since: 0, view: '' });
-    for (const id in state.recs) dev.dirty[id] = 1;
-  } else if (el.id === 'leave') {
-    const n = Object.keys(dev.dirty).length;
-    if (!confirm(n ? `${n} change${n > 1 ? 's have' : ' has'} not reached the other devices yet and will stay on this device only. Leave anyway?` : 'Stop sharing with the other devices? Everything recorded so far stays on this device.')) return;
-    dev = { ...freshDev(), offset: dev.offset, point: dev.point };
-    online = false;
-  } else if (el.id === 'reset') {
-    if (!confirm(`Delete ALL times, races and the entry list from this device?${dev.code ? ' Other devices on this event keep their copy.' : ' Export the results first if you need them.'}`)) return;
-    state = { recs: {} };
-    dev = freshDev();
-    online = false;
-  } else if (el.id === 'export') {
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob(['﻿' + toCsv(results(V))], { type: 'text/csv' })); // BOM: Excel reads accents correctly
-    a.download = `${V.name || 'results'}.csv`;
-    return a.click();
-  } else return;
-  commit();
-});
-
-document.addEventListener('change', e => {
-  const el = e.target, d = el.dataset, v = el.value.trim(), id = el.closest('[data-id]')?.dataset.id;
-  const race = () => ({ ...V.races.find(r => r.id === id) });
-  if ('bib' in d) put({ ...state.recs[id], bib: toBib(v) });
-  else if ('rname' in d) put({ ...race(), name: v || 'Race' });
-  else if ('pname' in d) put({ ...state.recs[id], name: v || 'Checkpoint' });
-  else if ('rdate' in d || 'rtime' in d) {
-    const [, , date, time] = el.closest('.race').children, text = time.value.trim(), ms = parseTod(text);
-    if (text && ms == null) { alert('A start time looks like 07:00:00 or 07:00:00.250'); return render(); }
-    if (!text && race().start == null) return; // only a date so far: wait for the time
-    const day = date.value || localIso(Date.now()).slice(0, 10);
-    put({ ...race(), start: text ? new Date(day + 'T00:00:00').getTime() + ms : null });
-  }
-  else if (el.id === 'eventName') put({ id: 'meta', k: 'meta', name: v });
-  else if (el.id === 'point') dev.point = v;
-  else if (el.id === 'uType') return void ($('uMin').hidden = v !== 'PEN');
-  else return;
-  commit();
-});
-
-// Another tab of this app changed the data: follow it rather than overwrite it.
-addEventListener('storage', () => { load(); render(); });
-
-// Keep the screen on at the finish line. The lock is dropped whenever the page is hidden, so re-take it.
-const stayAwake = () => navigator.wakeLock?.request('screen').catch(() => {});
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { stayAwake(); sync(); } });
-stayAwake();
-
-navigator.serviceWorker?.register('sw.js').catch(() => {}); // offline + install; unavailable when opened as a file
-
-load();
-if (VIEW) document.body.classList.add('viewer');
-render();
-show(VIEW ? 'results' : 'timing');
-setInterval(tick, 100);
-// ponytail: polling. Other devices see a change within 2 s; a WebSocket or SSE push if that feels slow.
-setInterval(sync, VIEW ? 5000 : 2000);
-sync();
-</script>
+<script src="app.js"></script>
 </body>
 </html>

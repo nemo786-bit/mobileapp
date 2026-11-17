@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T00:00:00.000Z",
+  "title": "Design System: TrailTime",
+  "extensions": {
+    "colorMeta": {
+      "hi-vis": { "role": "primary", "displayName": "Hi-vis Yellow" },
+      "race-1": { "role": "secondary", "displayName": "Race Blue" },
+      "race-2": { "role": "secondary", "displayName": "Race Red" },
+      "race-3": { "role": "secondary", "displayName": "Race Green" },
+      "race-4": { "role": "secondary", "displayName": "Race Violet" },
+      "race-5": { "role": "secondary", "displayName": "Race Orange" },
+      "ground": { "role": "neutral", "displayName": "Ground" },
+      "surface": { "role": "neutral", "displayName": "Surface" },
+      "ink": { "role": "neutral", "displayName": "Ink" },
+      "tyvek": { "role": "neutral", "displayName": "Tyvek" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Race names on fields and the public board. font-stretch 68%." },
+      "numeral": { "displayName": "Numeral", "purpose": "Bibs, positions, clocks and times. font-stretch 68%, tabular figures." },
+      "heading": { "displayName": "Heading", "purpose": "Section titles, uppercase, font-stretch 68%." },
+      "body": { "displayName": "Body", "purpose": "Everything read as a sentence." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "The yellow flash on a new time and the athlete card rising; both off under reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "wide", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bib chip",
+      "kind": "chip",
+      "refersTo": "bib",
+      "description": "An athlete, anywhere in the app. Opens their card.",
+      "html": "<button class=\"ds-bib\"><i></i><b>104</b></button>",
+      "css": ".ds-bib { display: inline-grid; min-width: 4.25rem; padding: 0; background: #fff; color: #0B0B0C; border: 2px solid #0B0B0C; text-align: center; font-family: Archivo, system-ui, sans-serif; } .ds-bib i { height: 8px; background: #1447E6; } .ds-bib b { padding: 0 6px; font-size: 1.5rem; font-weight: 900; font-stretch: 68%; line-height: 1.25; } .ds-bib:hover { background: #FFD60A; }"
+    },
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action to take on a screen.",
+      "html": "<button class=\"ds-primary\">Check in</button>",
+      "css": ".ds-primary { min-height: 44px; padding: 0 16px; background: #FFD60A; color: #0B0B0C; border: 2px solid #0B0B0C; border-radius: 0; font: 600 1rem Archivo, system-ui, sans-serif; } .ds-primary:active { background: #0B0B0C; color: #FFD60A; }"
+    },
+    {
+      "name": "Race field",
+      "kind": "custom",
+      "refersTo": "race-field",
+      "description": "A race in its own colour: name, clock, counts.",
+      "html": "<div class=\"ds-field\"><b>50K</b><span>3:42:18.6</span></div>",
+      "css": ".ds-field { padding: 18px 20px; background: #1447E6; color: #fff; font-family: Archivo, system-ui, sans-serif; font-stretch: 68%; font-variant-numeric: tabular-nums; } .ds-field b { display: block; font-size: 4.5rem; font-weight: 900; line-height: .9; } .ds-field span { font-size: 2rem; font-weight: 700; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Race Bib",
+    "overview": "TrailTime looks like the thing a race official already reads all day: the race bib. Every athlete is a white tile with heavy black numerals and a band in their race's colour. Each race owns one flat colour across the app, and hi-vis yellow is reserved for the one thing to press and for what needs a look.",
+    "keyCharacteristics": ["Bib chips for every athlete", "One flat colour per race", "Hi-vis yellow means act", "Condensed tabular numerals", "Square, flat, no shadows"],
+    "rules": [
+      { "name": "The bib rule", "body": "Any athlete shown anywhere is a bib chip, and the chip opens their card.", "section": "colors" },
+      { "name": "One colour per race", "body": "Race colour appears only on that race's field, band or bar.", "section": "colors" },
+      { "name": "Yellow means act", "body": "If it is yellow, it can be pressed or it needs someone.", "section": "colors" },
+      { "name": "Flat only", "body": "No gradients, glows or shadows.", "section": "elevation" }
+    ],
+    "dos": ["Show an athlete as their bib chip", "Keep a race in its own colour on every screen", "Pair every colour signal with words"],
+    "donts": ["Use race colours or yellow for decoration", "Add shadows, gradients or rounded cards", "Recolour the bib in dark mode"]
+  }
+}

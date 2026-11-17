@@ -1,7 +1,7 @@
 // Run: node test.js
 const assert = require('assert');
 const fs = require('fs'), os = require('os'), path = require('path');
-const { fmt, parseTod, merge, view, parseEntrants, results, toCsv } = require('./core.js');
+const { fmt, parseTod, merge, view, parseEntrants, startList, results, toCsv } = require('./core.js');
 
 // --- formatting and parsing
 assert.equal(fmt(0), '0:00:00.0');
@@ -29,11 +29,12 @@ assert.equal({}.evil, undefined);
 
 // --- entry list
 const parsed = parseEntrants(
-  'bib,name,category,race,chip\n1,Ann,F,25K,E200A1\n2,Bob,M,25K\n3,=SUM(1),M,50K\n\n7\tDee, "D"\tF\t50k\n4,Eve,F,25K\n5,Flo,F,25K\n6,Gil,M,25K',
+  'bib,name,category,race,chip,sex\n1,Ann,F,25K,E200A1,w\n2,Bob,M,25K,,Male\n3,=SUM(1),M,50K\n\n7\tDee, "D"\tF\t50k\n4,Eve,F,25K\n5,Flo,F,25K\n6,Gil,M,25K',
   [{ id: 'a', name: '25K' }]
 );
 assert.equal(parsed.entrants.length, 7); // header and blank line skipped
 assert.deepEqual(parsed.races.map(r => r.name), ['50K']); // created once; "50k" matched to it
+assert.deepEqual(parsed.entrants.slice(0, 3).map(e => e.sex), ['F', 'M', '']); // W/F and M/H are understood, anything else stays blank
 
 // --- records -> view -> results
 const recs = {};
@@ -97,15 +98,52 @@ assert.equal(noStart.races[0].rows.length, 0);
 assert.equal(noStart.unranked[0].problem, 'race not started');
 
 const csv = toCsv(res).split('\r\n');
-assert.equal(csv[0], 'Race,Pos,Bib,Name,Category,Cat pos,Finish time,Elapsed,Penalty,Total,CP1,CP2,Note');
+assert.equal(csv[0], 'Race,Pos,Bib,Name,Category,Sex,Cat pos,Finish time,Elapsed,Penalty,Total,CP1,CP2,Note');
 assert.equal(csv.length, 1 + 7 + 2 + 2); // header + 25K rows + 50K rows + unranked
-assert.ok(csv.every(l => l.split(',').length >= 13));
+assert.ok(csv.every(l => l.split(',').length >= 14));
 const line = bib => csv.find(l => l.split(',')[2] === bib);
 assert.ok(line('1').endsWith('0:00:03.0,0:00:02.0,0:00:05.0,0:00:01.0,0:00:02.0,'));
 assert.ok(line('6').endsWith(',DNF'));
 assert.ok(csv.some(l => l.includes(`"Dee, ""D"""`))); // quoted
 assert.ok(csv.some(l => l.includes(`'=SUM(1)`)));     // formula defused
 assert.ok(csv.at(-1).endsWith('Finish: duplicate bib'));
+
+// --- race counts for the ops dashboard
+assert.deepEqual(r25.counts, { entered: 5, checkedIn: 0, finished: 3, onCourse: 2, out: 1, dns: 1, started: 6, seen: { cp1: 4, cp2: 2 }, atFinish: 3 });
+
+// --- time trial: every athlete's clock starts at their own slot, in bib order
+const tt = {};
+const addT = r => { tt[r.id] = { u: 1, ...r }; };
+addT({ id: 'r', k: 'race', name: 'TT', start: 10000, o: 1, mode: 'tt', gap: 30 });
+for (const bib of ['10', '2', '1']) addT({ id: 'e:' + bib, k: 'entrant', bib, name: 'N' + bib, cat: '', race: 'r', chip: '', sex: '' });
+const vt = view(tt);
+assert.deepEqual(startList(vt, vt.races[0]).map(s => [s.bib, s.at]), [['1', 10000], ['2', 40000], ['10', 70000]]); // 2 before 10
+assert.equal(results(vt, 45000).races[0].counts.started, 2); // at 45 s only bibs 1 and 2 have left
+assert.equal(results(vt, 45000).races[0].rows[0].seenPoint, 'Start');
+addT({ id: 'a', k: 'time', t: 100000, bib: '1', p: '' });
+addT({ id: 'b', k: 'time', t: 100000, bib: '2', p: '' });       // same finish moment, started 30 s later
+addT({ id: 'c', k: 'time', t: 75000, bib: '10', p: 'start' });  // left 5 s late: the recorded start beats the slot
+addT({ id: 'd', k: 'time', t: 100000, bib: '10', p: '' });
+addT({ id: 'e', k: 'time', t: 76000, bib: '10', p: 'start' });  // a second start for the same bib is a mistake to look at
+const rt = results(view(tt));
+assert.deepEqual(rt.races[0].rows.map(r => [r.bib, r.total]), [['10', 25000], ['2', 60000], ['1', 90000]]);
+assert.deepEqual(rt.unranked.map(r => [r.id, r.point, r.problem]), [['e', 'Start', 'duplicate bib']]);
+
+// --- check-in: once it is in use, only checked-in athletes count as started
+for (const id of ['a', 'b', 'c', 'd', 'e']) delete tt[id];
+tt['e:1'] = { ...tt['e:1'], ci: 5000 };
+const rc = results(view(tt)).races[0];
+assert.deepEqual([rc.counts.entered, rc.counts.checkedIn, rc.counts.started], [3, 1, 1]);
+assert.deepEqual(rc.rows.map(r => [r.bib, r.status]), [['1', 'on course']]);
+
+// --- penalty box: served standing still, so it adds no time, but an unserved one is flagged
+addT({ id: 'a', k: 'time', t: 100000, bib: '1', p: '' });
+addT({ id: 'bx', k: 'update', bib: '1', type: 'BOX', sec: 120, in: 0, out: 0 });
+const rb = results(view(tt));
+assert.deepEqual([rb.box.length, rb.races[0].rows[0].unserved, rb.races[0].rows[0].total], [1, 1, 90000]);
+assert.ok(toCsv(rb).includes('penalty box not served'));
+tt.bx = { ...tt.bx, in: 50000, out: 170000 };
+assert.equal(results(view(tt)).races[0].rows[0].unserved, 0);
 
 // --- sync server: two devices, one event
 (async () => {
@@ -139,6 +177,7 @@ assert.ok(csv.at(-1).endsWith('Finish: duplicate bib'));
     assert.equal((await fetch(`${base}/api/view/${A.view}`, { method: 'POST', body: '{}' })).status, 404); // read-only
 
     assert.equal((await fetch(`${base}/`)).status, 200);
+    for (const f of ['app.js', 'app.css', 'fonts/archivo.woff2']) assert.equal((await fetch(`${base}/${f}`)).status, 200, f);
     assert.equal((await fetch(`${base}/server.js`)).status, 404);          // only the app's own files are served
     assert.equal((await fetch(`${base}/data/demo-1.json`)).status, 404);
     assert.equal(JSON.parse(fs.readFileSync(path.join(dir, 'demo-1.json'))).recs.t1.bib, '8'); // survives a restart
